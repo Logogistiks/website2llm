@@ -1,5 +1,3 @@
-#!/.venv/Scripts/python.exe
-
 import llm
 import json
 import configparser
@@ -10,7 +8,10 @@ def getcfg(filename: str="config.cfg") -> dict:
     cfgparser.read(filename)
     return dict(cfgparser.items("default"))
 
-def interact(userprompt: str, conv: llm.Conversation, verbose: bool=False) -> str:
+def interact(userprompt: str, handler: llm.Model|llm.Conversation=None, verbose: bool=False) -> str:
+    """Return an Answer to given prompt when supplied with a model or a conversation"""
+    if not isinstance(handler, llm.Model) or not isinstance(handler, llm.Conversation):
+        return "Error: Neither Model or Conversation Provided"
     db = sqlite_utils.Database("embeddings.db")
     collection = llm.Collection("default", db)
     if verbose: print("Comparing Embedding Vectors...")
@@ -22,7 +23,7 @@ def interact(userprompt: str, conv: llm.Conversation, verbose: bool=False) -> st
     info = ("#"*10).join(entrycontent)
     prompt = "Dies ist die Frage des Users:\n" + userprompt + "\nBitte beantworte diese Frage mithilfe folgender Daten:\n" + info
     if verbose: print("Generating Response...")
-    return conv.prompt(prompt).text()
+    return handler.prompt(prompt).text()
 
 if __name__ == "__main__":
     config = getcfg()
