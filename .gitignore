@@ -1,6 +1,9 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
 
+# virtual environment
+.venv/
+
 # Project-specific database files
 data.json
 embeddings.db
