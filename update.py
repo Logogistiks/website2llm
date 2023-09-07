@@ -9,11 +9,13 @@ from colorama.ansi import clear_screen, Fore
 from uuid import uuid4
 
 def getcfg(filename: str="config.cfg", section: str="default") -> dict:
+    """Load config properties from config file"""
     cfgparser = configparser.RawConfigParser()
     cfgparser.read(filename)
     return dict(cfgparser.items(section))
 
 def clear():
+    """Clears screen via ansi sequence so content is not overwitten"""
     print(clear_screen(), end="")
 
 def extractLinks(obj: BeautifulSoup, burl: str) -> list:
@@ -71,6 +73,7 @@ def extractText(links: list[str], singlestore: bool, verbose: bool=True) -> list
     return [d for d in result if d["content"] != ""]
 
 def updateData(path: str, url: str, singlestore: bool, verbose: bool=True):
+    """Update plain text database"""
     if verbose:
         print(Fore.WHITE + "Mapping Website...")
     sitelist = sitemap(url, verbose)
@@ -82,6 +85,7 @@ def updateData(path: str, url: str, singlestore: bool, verbose: bool=True):
         json.dump(text, f, indent=4, ensure_ascii=False)
 
 def updateDB(datapath: str, dbpath: str, modelname: str, verbose: bool=True):
+    """Update the embedding database"""
     if verbose:
         print("Create Database...")
     db = sqlite_utils.Database(dbpath, recreate=True)

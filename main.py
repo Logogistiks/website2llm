@@ -4,6 +4,7 @@ import sqlite_utils
 import time
 
 def getcfg(filename: str="config.cfg", section: str="default") -> dict:
+    """Load config properties from config file"""
     cfgparser = configparser.RawConfigParser()
     cfgparser.read(filename)
     return dict(cfgparser.items(section))
