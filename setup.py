@@ -4,7 +4,8 @@ import configparser # preinstalled
 
 requirements = ["llm", "colorama", "bs4", "requests", "urllib3", "langchain"]
 
-venv.create(".venv", with_pip=True)
+if not os.path.exists(".venv"):
+    venv.create(".venv", with_pip=True)
 vpython = ".venv\\Scripts\\python.exe"
 prefix = vpython + " -m "
 
