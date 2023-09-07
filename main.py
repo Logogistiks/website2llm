@@ -1,5 +1,4 @@
 import llm
-import json
 import configparser
 import sqlite_utils
 import time
@@ -17,12 +16,8 @@ def interact(userprompt: str, handler: llm.Model|llm.models.Conversation=None, v
     db = sqlite_utils.Database("embeddings.db")
     collection = llm.Collection("default", db)
     if verbose: print("Comparing Embedding Vectors...")
-    similar = [entry.id for entry in collection.similar(userprompt, number=cfg["similarnum"])]
-    if verbose: print("Loading needed Data from file...")
-    with open("data.json", "r") as f:
-        data = json.load(f)
-    entrycontent = [entry["content"] for entry in data if str(entry["id"]) in similar]
-    info = ("#"*10).join(entrycontent)
+    similar = [entry.content for entry in collection.similar(userprompt, number=cfg["similarnum"])]
+    info = ("#"*10).join(similar)
     if verbose: print(info)
     prompt = "Frage:\n" + userprompt + "\nBitte beantworte diese Frage. Bitte gib nur die Antwort zurück. Wenn die Antwort aus den folgenden Daten nicht ersichtlich ist, ein Name beispielsweise nicht vorkommt, gib bitte zurück, dass du die Antwort nicht weißt. Nutze dazu bitte folgende Daten:\n" + info
     if verbose: print("Generating Response...")
