@@ -20,6 +20,8 @@ config["default"] = {"website": "https://example.com",
                     "answermodel": "wizardlm-13b-v1",
                     "singlestore": "yes",
                     "similarnum": 5,
-                    "timestamp": "yes"}
+                    "timestamp": "no"}
+config["ignoreendings"] = {"ending1": "pwprotected.pdf",
+                           "ending2": "someother.html"}
 with open("config.cfg", "w") as f:
     config.write(f)

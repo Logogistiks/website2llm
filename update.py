@@ -8,10 +8,10 @@ from urllib.parse import urlparse
 from colorama.ansi import clear_screen, Fore
 from uuid import uuid4
 
-def getcfg(filename: str="config.cfg") -> dict:
+def getcfg(filename: str="config.cfg", section: str="default") -> dict:
     cfgparser = configparser.RawConfigParser()
     cfgparser.read(filename)
-    return dict(cfgparser.items("default"))
+    return dict(cfgparser.items(section))
 
 def clear():
     print(clear_screen(), end="")
@@ -22,7 +22,7 @@ def extractLinks(obj: BeautifulSoup, burl: str) -> list:
     internallinks = list(set([link for link in internallinks if link != "#"])) # remove empty hrefs and doubles
     internallinks = [link for link in internallinks if link.startswith("http") and link.startswith(burl) or not link.startswith("http")] # remove external links
     internallinks = [link if link.startswith("http") else burl+link for link in internallinks] # make links complete
-    internallinks = [link for link in internallinks if not link.endswith("morgen.pdf") or not link.endswith("heute.pdf")] # filter password protected site
+    internallinks = [link for link in internallinks if not any(link.endswith(ignore) for ignore in getcfg(section="ignoreendings").values())] # filter ignored sites
     internallinks = [link for link in internallinks if not ".." in link] # filter non accessible site
     return internallinks
 

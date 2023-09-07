@@ -3,10 +3,10 @@ import configparser
 import sqlite_utils
 import time
 
-def getcfg(filename: str="config.cfg") -> dict:
+def getcfg(filename: str="config.cfg", section: str="default") -> dict:
     cfgparser = configparser.RawConfigParser()
     cfgparser.read(filename)
-    return dict(cfgparser.items("default"))
+    return dict(cfgparser.items(section))
 
 def interact(userprompt: str, handler: llm.Model|llm.models.Conversation=None, verbose: bool=False) -> str:
     """Return an Answer to given prompt when supplied with a model or a conversation"""
@@ -31,6 +31,6 @@ if __name__ == "__main__":
         userinput = input(">>> ")
         if config["timestamp"]=="yes":
             print(time.strftime("[%H:%M:%S]"))
-        response = interact(userinput, conversation, verbose=True)
+        response = interact(userinput, conversation)
         prefix = time.strftime("[%H:%M:%S] ") if config["timestamp"]=="yes" else ""
         print(prefix + response)
