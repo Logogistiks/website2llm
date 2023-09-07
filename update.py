@@ -6,6 +6,7 @@ import sqlite_utils
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
 from colorama.ansi import clear_screen, Fore
+from uuid import uuid4
 
 def getcfg(filename: str="config.cfg") -> dict:
     cfgparser = configparser.RawConfigParser()
@@ -46,7 +47,7 @@ def sitemap(url: str, verbose: bool=True) -> list:
     globalURLs.sort()
     return globalURLs
 
-def extractText(links: list[str], verbose: bool=True) -> list:
+def extractText(links: list[str], singlestore: bool, verbose: bool=True) -> list:
     """Extracts the content of all text elements of every site in `links`"""
     result = []
     htmlcontents = []
@@ -60,19 +61,23 @@ def extractText(links: list[str], verbose: bool=True) -> list:
         for p in p_tags:
             for br in p.find_all("br"):
                 br.replace_with("###")
-        result.append({"id": ix, "content": "###".join(p.text.strip() for p in p_tags).replace(" ", " ").replace("######", "###")}) # first replacement is no breaking space U+00A0
+            if singlestore:
+                uuid = uuid4().hex # 32 character uuid string
+                result.append({"id": uuid, "content": p.text.strip().replace(" ", " ")}) # first replacement is no breaking space U+00A0
+        if not singlestore:
+            result.append({"id": ix, "content": "###".join(p.text.strip() for p in p_tags).replace(" ", " ").replace("######", "###")})
         if verbose:
             print(Fore.RED + f"[{str(ix).zfill(len(str(len(links))))}]" + Fore.WHITE + " | " + Fore.WHITE + "/".join(url.split("/")[:-1]) + Fore.LIGHTCYAN_EX + f"/{url.split('/')[-1]}" + Fore.WHITE)
-    return [{"id": d["id"], "content": d["content"][3:] if d["content"].startswith("###") else d["content"][:-3] if d["content"].endswith("###") else d["content"]} for d in result if d["content"] != ""]
+    return [d for d in result if d["content"] != ""]
 
-def updateData(path: str, url: str, verbose: bool=True):
+def updateData(path: str, url: str, singlestore: bool, verbose: bool=True):
     if verbose:
         print(Fore.WHITE + "Mapping Website...")
     sitelist = sitemap(url, verbose)
     clear()
     if verbose:
         print(Fore.WHITE + "Extracting Text...")
-    text = extractText(sitelist, verbose)
+    text = extractText(sitelist, singlestore, verbose)
     with open(path, "w", encoding="utf-8") as f:
         json.dump(text, f, indent=4, ensure_ascii=False)
 
@@ -91,10 +96,10 @@ def updateDB(datapath: str, dbpath: str, modelname: str, verbose: bool=True):
     data = [(str(item["id"]), item["content"]) for item in data]
     if verbose:
         print("Creating embedding vectors...")
-    collection.embed_multi(data)
+    collection.embed_multi(data, store=True)
 
 if __name__ == "__main__":
     config = getcfg()
-    updateData("data.json", config["website"])
+    updateData("data.json", config["website"], config["singlestore"]=="yes")
     clear()
     updateDB("data.json", "embeddings.db", config["embeddingmodel"])

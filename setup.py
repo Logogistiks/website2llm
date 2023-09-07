@@ -17,6 +17,9 @@ os.system(prefix + "llm sentence-transformers register multi-qa-mpnet-base-dot-v
 config = configparser.ConfigParser()
 config["default"] = {"website": "https://example.com",
                     "embeddingmodel": "sentence-transformers/multi-qa-mpnet-base-dot-v1",
-                    "answermodel": "wizardlm-13b-v1"}
+                    "answermodel": "wizardlm-13b-v1",
+                    "singlestore": "yes",
+                    "similarnum": 5,
+                    "timestamp": "yes"}
 with open("config.cfg", "w") as f:
     config.write(f)
