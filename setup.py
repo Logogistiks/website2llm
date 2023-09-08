@@ -6,7 +6,7 @@ requirements = ["llm", "colorama", "bs4", "requests", "urllib3", "langchain"]
 
 if not os.path.exists(".venv"):
     venv.create(".venv", with_pip=True)
-vpython = ".venv\\Scripts\\python.exe"
+vpython = ".venv/Scripts/python.exe"
 prefix = vpython + " -m "
 
 os.system(prefix + "pip install " + " ".join(requirements))
