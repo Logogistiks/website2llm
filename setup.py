@@ -6,7 +6,10 @@ requirements = ["llm", "colorama", "bs4", "requests", "urllib3", "langchain"]
 
 if not os.path.exists(".venv"):
     venv.create(".venv", with_pip=True)
-vpython = ".venv/Scripts/python.exe"
+if os.name == "nt":
+    vpython = ".venv/Scripts/python.exe"
+else:
+    vpython = ".venv/bin/python3"
 prefix = vpython + " -m "
 
 os.system(prefix + "pip install " + " ".join(requirements))
