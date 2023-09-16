@@ -50,3 +50,14 @@ Please be patient, the embedding- or answer-generating- process may take a lot o
 Warning: If the website is really big (it has many webpages), the amount of data collected can get relatively big (under `10MB` during testing with a website consisting of `~100 pages`). \
 Also, im not responsible for the network traffic and the possible consequences that may occur. During my testing, the `traffic` was relatively low, with a peak of `~1KB per second`. \
 But please inform yourself about the rules concerning webscraping tools on the target websites, im not responsible for your actions.
+
+# References
+LLM Python API: https://llm.datasette.io/en/stable/
+
+Embedding model: https://github.com/simonw/llm-sentence-transformers
+
+Answer model: https://github.com/simonw/llm-gpt4all
+
+Graph Software for readme-Image: https://www.yworks.com/products/yed
+
+Markdown table generator: https://www.tablesgenerator.com/markdown_tables
