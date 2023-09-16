@@ -19,7 +19,7 @@ Edit `config.cfg`. Things you can specify in the default category:
 | `website`        | Link to a page on the webserver you want to scrape                    |                                                                                            |
 | `embeddingmodel` | The embedding model used for converting sentences to vectors          | List of available models: https://www.sbert.net/docs/pretrained_models.html#model-overview |
 | `answermodel`    | The model used for answering the question of the user                 | List of available models: https://observablehq.com/@simonw/gpt4all-models                  |
-| `singlestore`    | Whether to store every <p> tag into a single DB entry or a whole page | `yes` <> `no`                                                                              |
+| `singlestore`    | Whether to store every `<p>` tag into a single DB entry or a whole page | `yes` <> `no`                                                                              |
 | `similarnum`     | The number of DB entries used to generate the answer                  |                                                                                            |
 | `timestamp`      | Whether to print a timestamp before and after interacting with the LM | `yes` <> `no`                                                                              |
 
