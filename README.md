@@ -29,7 +29,7 @@ Entering something into the ignoreendings category ignores sites with the specif
 ## Usage
 Please make sure to edit the config file first, as described above.
 ### Updating
-To update the database, run `update.py` with the python interpreter from the venv (on Windows: .venv\Scripts\python.exe ; on Linux: .venv/bin/python3). Updating is required if the website you scraped last was updated or if you want to scrape a new one. For the latter, make sure to update the config file.
+To update the database, run `update.py` with the python interpreter from the venv (on Windows: `.venv\Scripts\python.exe` ; on Linux: `.venv/bin/python3`). Updating is required if the website you scraped last was updated or if you want to scrape a new one. For the latter, make sure to update the config file.
 
 The process is verbose by default, if you don't want any output (not recommended), you can edit `update.py` and add the `verbose=False` parameter to the `updateData()` and `updateDB()` function calls in the main section.
 
