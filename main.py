@@ -32,6 +32,6 @@ if __name__ == "__main__":
         userinput = input(">>> ")
         if config["timestamp"]=="yes":
             print(time.strftime("[%H:%M:%S]"))
-        response = interact(userinput, conversation)
+        response = interact(userinput, conversation, verbose=True)
         prefix = time.strftime("[%H:%M:%S] ") if config["timestamp"]=="yes" else ""
         print(prefix + response)
