@@ -1,10 +1,7 @@
 # Website2llm
 Maps all the publicly availabe pages that link to each other on a webserver based on a given starting url, then scrapes all the contents into a database so the user can retreive information about the webpages through an [EM](https://en.wikipedia.org/wiki/Word_embedding) and [LLM](https://en.wikipedia.org/wiki/Large_language_model).
 
-```
-Note: The prompt template used for feeding the LLM is currently in german, if you want to change it
-or add aditional instructions, simply edit `main.py` and change the template function in the main section.
-```
+> Note: The prompt template used for feeding the LLM is currently in german, if you want to change it or add aditional instructions, simply edit `main.py` and change the template function in the main section.
 
 ![Workflow](/images/website2llm_workflow.svg)
 
