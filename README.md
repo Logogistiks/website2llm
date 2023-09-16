@@ -29,14 +29,14 @@ Entering something into the ignoreendings category ignores sites with the specif
 ## Usage
 Please make sure to edit the config file first, as described above.
 ### Updating
-To update the database, run `update.py`. This is required if the website you scraped last was updated or if you want to scrape a new one. For the latter, make sure to update the config file.
+To update the database, run `update.py` with the python interpreter from the venv (on Windows: .venv\Scripts\python.exe ; on Linux: .venv/bin/python3). Updating is required if the website you scraped last was updated or if you want to scrape a new one. For the latter, make sure to update the config file.
 
 The process is verbose by default, if you don't want any output (not recommended), you can edit `update.py` and add the `verbose=False` parameter to the `updateData()` and `updateDB()` function calls in the main section.
 
 The creation of the embedding vectors can take some time, especially if the webserver contains a lot if sites, so please be patient.
 
 ### Information retrieval
-Simply run `main.py`, type in your question about the website and wait for the response. Please note that this process can take a lot of time, during my testing up to a full minute.
+Simply run `main.py` using the interpreter  as specified above, type in your question about the website and wait for the response. Please note that this process can take a lot of time, during my testing up to a full minute.
 
 # Disclaimer
 This project is very `experimental`, it is more of a concept than a serious tool. I just wanted to see if something like this is possible. The answer is yes, but very very slowly. \
