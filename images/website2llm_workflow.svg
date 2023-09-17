@@ -304,8 +304,10 @@
       <path d="M-848122.3125 -398002.0938 L-848117.3125 -398014.0938 L-848122.3125 -398011.0938 L-848127.3125 -398014.0938 Z" clip-path="url(#clipPath2)" stroke="none"/>
       <path fill="none" d="M-848306.4375 -398210 L-848264.8125 -398210 L-848264.8125 -398130.25" clip-path="url(#clipPath2)"/>
       <path d="M-848264.8125 -398122.25 L-848259.8125 -398134.25 L-848264.8125 -398131.25 L-848269.8125 -398134.25 Z" clip-path="url(#clipPath2)" stroke="none"/>
-      <path fill="none" d="M-848245 -398098.8125 L-848172 -398098.8125" clip-path="url(#clipPath2)"/>
-      <path d="M-848164 -398098.8125 L-848176 -398103.8125 L-848173 -398098.8125 L-848176 -398093.8125 Z" clip-path="url(#clipPath2)" stroke="none"/>
+      <path fill="none" d="M-848164 -398098.8125 L-848237.0625 -398098.8125" clip-path="url(#clipPath2)"/>
+      <path d="M-848245.0625 -398098.8125 L-848233.0625 -398093.8125 L-848236.0625 -398098.8125 L-848233.0625 -398103.8125 Z" clip-path="url(#clipPath2)" stroke="none"/>
+      <path fill="none" d="M-848245 -398087.5625 L-848172.0625 -398087.5625" clip-path="url(#clipPath2)"/>
+      <path d="M-848164.0625 -398087.5625 L-848176.0625 -398092.5625 L-848173.0625 -398087.5625 L-848176.0625 -398082.5625 Z" clip-path="url(#clipPath2)" stroke="none"/>
     </g>
     <g fill="rgb(245,245,245)" text-rendering="geometricPrecision" shape-rendering="geometricPrecision" transform="matrix(1,0,0,1,848817,398608)" stroke="rgb(245,245,245)">
       <rect x="-848708.92" y="-397906.8502" clip-path="url(#clipPath2)" width="694.3114" rx="4" ry="4" height="465.2078" stroke="none"/>
