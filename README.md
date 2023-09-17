@@ -8,9 +8,18 @@ Maps all the publicly availabe pages that link to each other on a webserver base
 ## Prequisites
 * Python3
 * pip
+* git
 
 ## Installation
-Just run `setup.py`. As you can see in the diagram above, it creates a virtual environment, installs all its requirements and creates a template config file.
+Clone the repo with this command:
+```
+git clone https://github.com/Logogistiks/website2llm
+```
+Then cd into the folder:
+```
+cd website2llm
+```
+Then just run `setup.py`. As you can see in the diagram above, it creates a virtual environment, installs all its requirements and creates a template config file.
 
 ## Configuration
 Edit `config.cfg`. Things you can specify in the default category:
