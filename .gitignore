@@ -13,3 +13,6 @@ config.cfg
 
 # Vscode
 .vscode/
+
+# Private files
+private/
