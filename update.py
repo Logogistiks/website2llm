@@ -39,7 +39,7 @@ def extractLinks(obj: BeautifulSoup, burl: str) -> list:
     # Check for Anti-Criteria
     linksonsite = [a["href"] for a in obj.find_all("a", href=True)] # get link in href property
     extracted = [complete(link, burl) for link in linksonsite if not any([isplaceholder(link), isexternal(link, burl), isunwanted(link), isextrafile(link, burl), isignored(link)])]
-    return list(set(extracted))
+    return list(set(extracted)) # remove double
 
 def sitemap(url: str, verbose: bool=True) -> list:
     """Returns all interlinked (and publicly available) paths on the given website"""
