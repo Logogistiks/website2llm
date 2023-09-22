@@ -25,13 +25,21 @@ def clear():
 
 def extractLinks(obj: BeautifulSoup, burl: str) -> list:
     """Extract Links from BeautifulSoup object"""
-    internallinks = [a["href"] for a in obj.find_all("a", href=True)] # get link in href property
-    internallinks = list(set([link for link in internallinks if link.strip() not in ["#"]])) # remove empty hrefs and doubles
-    internallinks = [link for link in internallinks if link.startswith(burl) or link.startswith("/")] # remove external links
-    internallinks = [link if link.startswith("http") else burl+link for link in internallinks] # make links complete
-    internallinks = [link for link in internallinks if not any(link.lower().endswith(ignore.lower()) for ignore in getcfg(section="ignoreendings").values())] # filter ignored sites
-    internallinks = [link for link in internallinks if all(sub not in link for sub in ["..", "mailto:", "tel:", "(", ")", ".psml", ",", "/termine/", "/jevents"])] # filter forbidden sequences
-    return internallinks
+    # Define util functions
+    complete = lambda u, bu: u if u.startswith(bu) else bu+u # complete url fragments to full links
+    norm     = lambda u    : basename(normpath(u[:u.find("?")] if "?" in u else u)) # remove query parameters and return last part of url path, aka. "the part after the last slash"
+
+    # Define Anti-Criteria
+    isplaceholder = lambda u    : u.strip() == "#" # link can not be placeholder value
+    isexternal    = lambda u, bu: not u.startswith(bu) and not u.startswith("/") # link must be from the current domain
+    isunwanted    = lambda u    : any(sub in u for sub in ["..", "mailto:", "tel:", "(", ")", ",", "/termine/", "/jevents"]) # link can not contain these impurities
+    isextrafile   = lambda u, bu: "." in norm(complete(u, bu)) and not any(norm(complete(u, bu)).endswith(end) for end in ["html", "php"]) # link must be a webpage, not a file / document
+    isignored     = lambda u    : any(u.lower().endswith(ignore.lower()) for ignore in getcfg(section="ignoreendings").values()) # check if link is marked as ignored in the config.cfg
+
+    # Check for Anti-Criteria
+    linksonsite = [a["href"] for a in obj.find_all("a", href=True)] # get link in href property
+    extracted = [complete(link, burl) for link in linksonsite if not any([isplaceholder(link), isexternal(link, burl), isunwanted(link), isextrafile(link, burl), isignored(link)])]
+    return list(set(extracted))
 
 def sitemap(url: str, verbose: bool=True) -> list:
     """Returns all interlinked (and publicly available) paths on the given website"""
@@ -98,7 +106,7 @@ def updateDB(datapath: str, dbpath: str, modelname: str, verbose: bool=True):
     collection = llm.Collection("default", db, model=embeddingmodel)
     if verbose:
         print("Load Data from file...")
-    with open(datapath, "r") as f:
+    with open(datapath, "r", encoding="utf-8") as f:
         data = json.load(f)
     if verbose:
         print("Prepare Data...")
