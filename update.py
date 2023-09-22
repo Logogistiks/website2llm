@@ -3,10 +3,15 @@ import json
 import requests
 import configparser
 import sqlite_utils
+from uuid import uuid4
+from datetime import datetime
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
+from os.path import basename, normpath
 from colorama.ansi import clear_screen, Fore
-from uuid import uuid4
+
+def remquery(u):
+    return basename(normpath(u[:u.find("?")] if "?" in u else u))
 
 def getcfg(filename: str="config.cfg", section: str="default") -> dict:
     """Load config properties from config file"""
@@ -21,11 +26,11 @@ def clear():
 def extractLinks(obj: BeautifulSoup, burl: str) -> list:
     """Extract Links from BeautifulSoup object"""
     internallinks = [a["href"] for a in obj.find_all("a", href=True)] # get link in href property
-    internallinks = list(set([link for link in internallinks if link != "#"])) # remove empty hrefs and doubles
-    internallinks = [link for link in internallinks if link.startswith("http") and link.startswith(burl) or not link.startswith("http")] # remove external links
+    internallinks = list(set([link for link in internallinks if link.strip() not in ["#"]])) # remove empty hrefs and doubles
+    internallinks = [link for link in internallinks if link.startswith(burl) or link.startswith("/")] # remove external links
     internallinks = [link if link.startswith("http") else burl+link for link in internallinks] # make links complete
-    internallinks = [link for link in internallinks if not any(link.endswith(ignore) for ignore in getcfg(section="ignoreendings").values())] # filter ignored sites
-    internallinks = [link for link in internallinks if not ".." in link] # filter non accessible site
+    internallinks = [link for link in internallinks if not any(link.lower().endswith(ignore.lower()) for ignore in getcfg(section="ignoreendings").values())] # filter ignored sites
+    internallinks = [link for link in internallinks if all(sub not in link for sub in ["..", "mailto:", "tel:", "(", ")", ".psml", ",", "/termine/", "/jevents"])] # filter forbidden sequences
     return internallinks
 
 def sitemap(url: str, verbose: bool=True) -> list:
@@ -37,7 +42,7 @@ def sitemap(url: str, verbose: bool=True) -> list:
     done = []
     while queue:
         curURL = queue[-1]
-        html = requests.get(url).content
+        html = requests.get(curURL).content
         parsed = BeautifulSoup(html, "html.parser")
         intLinks = extractLinks(parsed, baseurl)
         globalURLs += [link for link in intLinks if link not in globalURLs]
@@ -104,6 +109,11 @@ def updateDB(datapath: str, dbpath: str, modelname: str, verbose: bool=True):
 
 if __name__ == "__main__":
     config = getcfg()
+    starttime = datetime.now()
     updateData("data.json", config["website"], config["singlestore"]=="yes")
     clear()
     updateDB("data.json", "embeddings.db", config["embeddingmodel"])
+    endtime = datetime.now()
+    elapsed = endtime - starttime
+    if config["timestamp"]:
+        print(f"{Fore.LIGHTGREEN_EX}Start time: {Fore.LIGHTYELLOW_EX}{starttime}, {Fore.LIGHTRED_EX}End time: {Fore.LIGHTYELLOW_EX}{endtime}, {Fore.LIGHTCYAN_EX}Elapsed: {Fore.LIGHTYELLOW_EX}{elapsed}" + Fore.WHITE)
