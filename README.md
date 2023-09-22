@@ -5,6 +5,8 @@ Maps all the publicly availabe pages that link to each other on a webserver base
 
 ![Workflow](/images/website2llm_workflow.svg)
 
+![Process](/images/visualisation.png)
+
 ## Prequisites
 * Python3
 * pip
