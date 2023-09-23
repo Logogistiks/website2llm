@@ -35,7 +35,10 @@ Edit `config.cfg`. Things you can specify in the default category:
 | `timestamp`      | Whether to print a timestamp before and after interacting with the LM | `yes` <> `no`                                                                              |
 
 > (Optional) \
-Entering something into the ignoreendings category ignores sites with the specified endings while scraping, e.g. for sites that are password protected or you simply don't want
+Entering something into the ignoreendings category ignores sites with the specified endings while scraping, e.g. for sites that are password protected or you simply don't want in your database
+
+> (Optional) \
+Entering something into the ignoreimpure category ignores sites whose link contains the specified string, eg for subdirectories
 
 ## Usage
 Please make sure to edit the config file first, as described above.
