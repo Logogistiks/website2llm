@@ -43,7 +43,7 @@ def extractLinks(obj: BeautifulSoup, burl: str) -> list:
     # Check for Anti-Criteria
     linksonsite = [a["href"] for a in obj.find_all("a", href=True)] # get link in href property
     extracted = [complete(link, burl) for link in linksonsite if not any([isplaceholder(link), isexternal(link, burl), isunwanted(link), isextrafile(link, burl), isignored(link)])]
-    return list(set(extracted)) # remove double
+    return list(set(extracted)) # remove doubles
 
 def sitemap(url: str, verbose: bool=True) -> list:
     """Returns all interlinked (and publicly available) paths on the given website"""
@@ -59,12 +59,11 @@ def sitemap(url: str, verbose: bool=True) -> list:
         intLinks = extractLinks(parsed, baseurl)
         globalURLs += [link for link in intLinks if link not in globalURLs]
         done.append(curURL)
-        queue[:0] = [link for link in intLinks if link not in queue and link not in done]
+        queue[:0] = [link for link in intLinks if link not in queue and link not in done] # insert new links at start of queue
         queue.pop(-1)
         if verbose:
             print(f"{Fore.LIGHTRED_EX}Queue: {str(len(queue)).zfill(3)}{Fore.WHITE} | {Fore.LIGHTGREEN_EX}Done: {str(len(done)).zfill(3)}{Fore.WHITE} | {Fore.LIGHTCYAN_EX}Global: {str(len(globalURLs)).zfill(3)}{Fore.WHITE} | {Fore.WHITE + curURL}")
-    globalURLs.sort()
-    return globalURLs
+    return sorted(globalURLs)
 
 def extractText(links: list[str], singlestore: bool, verbose: bool=True) -> list:
     """Extracts the content of all text elements of every site in `links`"""
