@@ -52,12 +52,11 @@ Simply run `main.py` using the interpreter  as specified above, type in your que
 # Disclaimer
 This project is very `experimental`, it is more of a concept than a serious tool. I just wanted to see if something like this is possible. The answer is yes, but very very slowly. \
 I admit that the code of this project is garbage, but this was thrown together in about 3 weeks. \
-I don't know if, what or how much improvements are coming in the future, but i plan to somehow make this conversation friendly, so you can chat with it like a real chat model. \
+I don't know if, what or how much improvements are coming in the future, but I plan to somehow make this conversation friendly, so you can chat with it like a real chat model. \
 Please be patient, the embedding- or answer-generating- process may take a lot of time.
 
-Warning: If the website is really big (it has many webpages), the amount of data collected can get relatively big (under `10MB` during testing with a website consisting of `~100 pages`). \
-Also, im not responsible for the network traffic and the possible consequences that may occur. During my testing, the `traffic` was relatively low, with a peak of `~1KB per second`. \
-But please inform yourself about the rules concerning webscraping tools on the target websites, im not responsible for your actions.
+Warning: During my testing, the `traffic` was relatively low, with a peak of `~1KB per second`. \
+But please inform yourself about the rules concerning webscraping tools on the target websites, Im not responsible for your actions.
 
 # References
 LLM Python API: https://llm.datasette.io/en/stable/
