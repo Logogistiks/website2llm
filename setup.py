@@ -27,5 +27,6 @@ config["default"] = {"website": "https://example.com",
                     "timestamp": "no"}
 config["ignoreendings"] = {"ending1": "pwprotected.pdf",
                            "ending2": "someother.html"}
+config["ignoreimpure"] = {"impure1": "/thisshouldbeignored/"}
 with open("config.cfg", "w") as f:
     config.write(f)

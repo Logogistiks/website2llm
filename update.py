@@ -29,12 +29,16 @@ def extractLinks(obj: BeautifulSoup, burl: str) -> list:
     complete = lambda u, bu: u if u.startswith(bu) else bu+u # complete url fragments to full links
     norm     = lambda u    : basename(normpath(u[:u.find("?")] if "?" in u else u)) # remove query parameters and return last part of url path, aka. "the part after the last slash"
 
+    # Get User-Criteria
+    user_ignore_ends = list(getcfg(section="ignoreendings").values())
+    user_ignore_imp = list(getcfg(section="ignoreimpure").values())
+
     # Define Anti-Criteria
     isplaceholder = lambda u    : u.strip() == "#" # link can not be placeholder value
     isexternal    = lambda u, bu: not u.startswith(bu) and not u.startswith("/") # link must be from the current domain
-    isunwanted    = lambda u    : any(sub in u for sub in ["..", "mailto:", "tel:", "(", ")", ",", "/termine/", "/jevents"]) # link can not contain these impurities
+    isunwanted    = lambda u    : any(sub in u for sub in ["..", "mailto:", "tel:", "(", ")", ","]+user_ignore_imp) # link can not contain these impurities
     isextrafile   = lambda u, bu: "." in norm(complete(u, bu)) and not any(norm(complete(u, bu)).endswith(end) for end in ["html", "php"]) # link must be a webpage, not a file / document
-    isignored     = lambda u    : any(u.lower().endswith(ignore.lower()) for ignore in getcfg(section="ignoreendings").values()) # check if link is marked as ignored in the config.cfg
+    isignored     = lambda u    : any(u.lower().endswith(ignore.lower()) for ignore in user_ignore_ends) # check if link is marked as ignored in the config.cfg
 
     # Check for Anti-Criteria
     linksonsite = [a["href"] for a in obj.find_all("a", href=True)] # get link in href property
@@ -67,7 +71,10 @@ def extractText(links: list[str], singlestore: bool, verbose: bool=True) -> list
     result = []
     htmlcontents = []
     for ix, url in enumerate(links):
-        html = requests.get(url).content
+        req = requests.get(url)
+        if "pdf" in req.headers["Content-Type"]:
+            continue
+        html = req.content
         if html in htmlcontents:
             continue
         htmlcontents.append(html)
@@ -124,4 +131,6 @@ if __name__ == "__main__":
     endtime = datetime.now()
     elapsed = endtime - starttime
     if config["timestamp"]:
-        print(f"{Fore.LIGHTGREEN_EX}Start time: {Fore.LIGHTYELLOW_EX}{starttime}, {Fore.LIGHTRED_EX}End time: {Fore.LIGHTYELLOW_EX}{endtime}, {Fore.LIGHTCYAN_EX}Elapsed: {Fore.LIGHTYELLOW_EX}{elapsed}" + Fore.WHITE)
+        print(f"{Fore.LIGHTGREEN_EX}Start time: {Fore.LIGHTYELLOW_EX}{starttime.strftime('%H:%M:%S')}, {Fore.LIGHTRED_EX}End time: {Fore.LIGHTYELLOW_EX}{endtime.strftime('%H:%M:%S')}, {Fore.LIGHTCYAN_EX}Elapsed: {Fore.LIGHTYELLOW_EX}{str(elapsed).split('.')[0]}" + Fore.WHITE)
+
+# TODO: Check if header is pdf then ignore (extractText)
