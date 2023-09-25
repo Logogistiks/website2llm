@@ -7,6 +7,10 @@ Maps all the publicly availabe pages that link to each other on a webserver base
 
 ![Process](/images/visualisation.png)
 
+![Process](/images/visualisation2.png)
+
+![Process](/images/visualisation3.png)
+
 ## Prequisites
 * Python3
 * pip
