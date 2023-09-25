@@ -45,80 +45,85 @@ def extractLinks(obj: BeautifulSoup, burl: str) -> list:
     extracted = [complete(link, burl) for link in linksonsite if not any([isplaceholder(link), isexternal(link, burl), isunwanted(link), isextrafile(link, burl), isignored(link)])]
     return list(set(extracted)) # remove doubles
 
-def sitemap(url: str, verbose: bool=True) -> list:
+def sitemap(url: str, verbose: bool=True) -> tuple[list, dict]:
     """Returns all interlinked (and publicly available) paths on the given website"""
     baseurl = f"{urlparse(url).scheme}://{urlparse(url).netloc}"
-    globalURLs = [url]
+    globalURLs = [url] # all scraped urls
+    contentcache = {} # maps urls to its html code for later use to save bandwith
+    queue = [url] # urls that are still to do
+    done = [] # completed urls
 
-    queue = [url]
-    done = []
     while queue:
         curURL = queue[-1]
-        html = requests.get(curURL).content
-        parsed = BeautifulSoup(html, "html.parser")
-        intLinks = extractLinks(parsed, baseurl)
-        globalURLs += [link for link in intLinks if link not in globalURLs]
-        done.append(curURL)
-        queue[:0] = [link for link in intLinks if link not in queue and link not in done] # insert new links at start of queue
-        queue.pop(-1)
-        if verbose:
-            print(f"{Fore.LIGHTRED_EX}Queue: {str(len(queue)).zfill(3)}{Fore.WHITE} | {Fore.LIGHTGREEN_EX}Done: {str(len(done)).zfill(3)}{Fore.WHITE} | {Fore.LIGHTCYAN_EX}Global: {str(len(globalURLs)).zfill(3)}{Fore.WHITE} | {Fore.WHITE + curURL}")
-    return sorted(globalURLs)
 
-def extractText(links: list[str], singlestore: bool, verbose: bool=True) -> list:
+        html = requests.get(curURL)
+        contentcache[curURL] = html
+        parsed = BeautifulSoup(html.content, "html.parser")
+
+        internallinks = extractLinks(parsed, baseurl)
+
+        globalURLs += [link for link in internallinks if link not in globalURLs] # add links to main list if not already present
+        done.append(curURL)
+        queue.extend([link for link in internallinks if link not in queue and link not in done]) # insert new links at start of queue
+        queue.pop(0)
+
+        if verbose: print(f"{Fore.LIGHTRED_EX}Queue: {str(len(queue)).zfill(3)}{Fore.WHITE} | {Fore.LIGHTGREEN_EX}Done: {str(len(done)).zfill(3)}{Fore.WHITE} | {Fore.LIGHTCYAN_EX}Global: {str(len(globalURLs)).zfill(3)}{Fore.WHITE} | {Fore.WHITE + curURL}")
+    return (sorted(list(set(globalURLs))), contentcache)
+
+def extractText(links: list[str], singlestore: bool, verbose: bool=True, contentcache: dict[str, requests.Response]=None) -> list:
     """Extracts the content of all text elements of every site in `links`"""
     result = []
-    htmlcontents = []
+    htmlremember = []
+
     for ix, url in enumerate(links):
-        req = requests.get(url)
-        if "pdf" in req.headers["Content-Type"]:
+        req = contentcache[url] if contentcache else requests.get(url) # retrieve html from mapping instead of making traffic
+        if "pdf" in req.headers.get("Content-Type", ""):
             continue
         html = req.content
-        if html in htmlcontents:
+        if html in htmlremember:
             continue
-        htmlcontents.append(html)
+        htmlremember.append(html)
+
         parsed = BeautifulSoup(html, "html.parser")
         p_tags = parsed.find_all("p")
+
         for p in p_tags:
             for br in p.find_all("br"):
                 br.replace_with("###")
-            if singlestore:
-                uuid = uuid4().hex # 32 character uuid string
-                result.append({"id": uuid, "content": p.text.strip().replace(" ", " ")}) # first replacement is no breaking space U+00A0
-        if not singlestore:
-            result.append({"id": ix, "content": "###".join(p.text.strip() for p in p_tags).replace(" ", " ").replace("######", "###")})
-        if verbose:
-            print(Fore.RED + f"[{str(ix).zfill(len(str(len(links))))}]" + Fore.WHITE + " | " + Fore.WHITE + "/".join(url.split("/")[:-1]) + Fore.LIGHTCYAN_EX + f"/{url.split('/')[-1]}" + Fore.WHITE)
+            if singlestore: result.append({"id": uuid4().hex, "content": p.text.strip().replace(" ", " ")}) # replace "no breaking space" U+00A0
+
+        if not singlestore: result.append({"id": ix, "content": "###".join(p.text.strip() for p in p_tags).replace(" ", " ").replace("######", "###")})
+
+        if verbose: print(Fore.RED + f"[{str(ix).zfill(len(str(len(links))))}]" + Fore.WHITE + " | " + Fore.WHITE + "/".join(url.split("/")[:-1]) + Fore.LIGHTCYAN_EX + f"/{url.split('/')[-1]}" + Fore.WHITE)
     return [d for d in result if d["content"] != ""]
 
 def updateData(path: str, url: str, singlestore: bool, verbose: bool=True):
     """Update plain text database"""
-    if verbose:
-        print(Fore.WHITE + "Mapping Website...")
-    sitelist = sitemap(url, verbose)
+    if verbose: print(Fore.WHITE + "Mapping Website...")
+    sitelist, mapping = sitemap(url, verbose)
+
     clear()
-    if verbose:
-        print(Fore.WHITE + "Extracting Text...")
-    text = extractText(sitelist, singlestore, verbose)
+    if verbose: print(Fore.WHITE + "Extracting Text...")
+    text = extractText(sitelist, singlestore, verbose, contentcache=mapping)
+
     with open(path, "w", encoding="utf-8") as f:
         json.dump(text, f, indent=4, ensure_ascii=False)
 
 def updateDB(datapath: str, dbpath: str, modelname: str, verbose: bool=True):
     """Update the embedding database"""
-    if verbose:
-        print("Create Database...")
+    if verbose: print("Create Database...")
     db = sqlite_utils.Database(dbpath, recreate=True)
     embeddingmodel = llm.get_embedding_model(modelname)
     collection = llm.Collection("default", db, model=embeddingmodel)
-    if verbose:
-        print("Load Data from file...")
+
+    if verbose: print("Load Data from file...")
     with open(datapath, "r", encoding="utf-8") as f:
         data = json.load(f)
-    if verbose:
-        print("Prepare Data...")
+
+    if verbose: print("Prepare Data...")
     data = [(str(item["id"]), item["content"]) for item in data]
-    if verbose:
-        print("Creating embedding vectors...")
+
+    if verbose: print("Creating embedding vectors...")
     collection.embed_multi(data, store=True)
 
 if __name__ == "__main__":
