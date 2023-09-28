@@ -136,5 +136,3 @@ if __name__ == "__main__":
     elapsed = endtime - starttime
     if config["timestamp"]:
         print(f"{Fore.LIGHTGREEN_EX}Start time: {Fore.LIGHTYELLOW_EX}{starttime.strftime('%H:%M:%S')}, {Fore.LIGHTRED_EX}End time: {Fore.LIGHTYELLOW_EX}{endtime.strftime('%H:%M:%S')}, {Fore.LIGHTCYAN_EX}Elapsed: {Fore.LIGHTYELLOW_EX}{str(elapsed).split('.')[0]}" + Fore.WHITE)
-
-# TODO: Check if header is pdf then ignore (extractText)
