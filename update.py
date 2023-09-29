@@ -76,8 +76,8 @@ def extractText(links: list[str], singlestore: bool, verbose: bool=True, content
     htmlremember = []
 
     for ix, url in enumerate(links):
-        req = contentcache[url] if contentcache else requests.get(url) # retrieve html from mapping instead of making traffic
-        if "pdf" in req.headers.get("Content-Type", ""):
+        req = contentcache.get(url, None) if contentcache else requests.get(url) # retrieve html from mapping instead of making traffic
+        if "pdf" in req.headers.get("Content-Type", "") or req is None:
             continue
         html = req.content
         if html in htmlremember:

@@ -25,7 +25,8 @@ def interact(userprompt: str, handler: llm.Model|llm.models.Conversation=None, v
 
 if __name__ == "__main__":
     # change this ∨∨∨ , inp is the question of the user, data is the retrieved db-entries
-    template = lambda inp, data: f"Frage:\n{inp}\nBitte beantworte diese Frage. Bitte gib nur die Antwort zurück. Wenn die Antwort aus den folgenden Daten nicht ersichtlich ist, ein Name beispielsweise nicht vorkommt, gib bitte zurück, dass du die Antwort nicht weißt. Nutze dazu bitte folgende Daten:\n{data}"
+    #template = lambda inp, data: f"Frage:\n{inp}\nBitte beantworte diese Frage. Bitte gib nur die Antwort zurück. Wenn die Antwort aus den folgenden Daten nicht ersichtlich ist, ein Name beispielsweise nicht vorkommt, gib bitte zurück, dass du die Antwort nicht weißt. Nutze dazu bitte folgende Daten:\n{data}"
+    template = lambda inp, data: f"{inp}\nAntworte kurz und präzise und nutze dazu bitte folgende Daten:\n{data}"
     config = getcfg()
     model = llm.get_model(config["answermodel"])
     conversation = model.conversation()
